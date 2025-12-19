@@ -8,11 +8,13 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\Keywords\FirebirdKeywords;
 use Doctrine\DBAL\Platforms\Keywords\KeywordList;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\TransactionIsolationLevel;
+use Doctrine\DBAL\Types\Type;
 use UnexpectedValueException;
 
 use function sprintf;
@@ -142,7 +144,7 @@ class FirebirdPlatform extends AbstractPlatform
     {
         return sprintf(
             'CREATE SEQUENCE %s START WITH %d INCREMENT BY %d',
-            $sequence->getQuotedName($this),
+            $sequence->getObjectName($this),
             $sequence->getInitialValue(),
             $sequence->getAllocationSize(),
         );
@@ -318,9 +320,10 @@ class FirebirdPlatform extends AbstractPlatform
     public function createSchemaManager(Connection $connection): AbstractSchemaManager
     {
         return new class ($connection, $this) extends AbstractSchemaManager {
-            protected function _getPortableTableColumnDefinition(array $tableColumn): array
+            protected function _getPortableTableColumnDefinition(array $tableColumn): Column
             {
-                return $tableColumn;
+                $typeName = $this->platform->getDoctrineTypeMapping($tableColumn['type'] ?? 'string');
+                return new Column($tableColumn['name'] ?? 'column', Type::getType($typeName));
             }
         };
     }
