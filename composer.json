@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Foodsoft\\FirebirdDriver\\": "lib/"
+            "FKaynakli\\FirebirdDriver\\": "src/"
         }
     }
 }

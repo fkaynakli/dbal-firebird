@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Doctrine\DBAL\DriverManager;
-use Foodsoft\FirebirdDriver\FirebirdDriver;
+use FKaynakli\FirebirdDriver\FirebirdDriver;
 
 $connectionParams = [
     'driverClass' => FirebirdDriver::class,
