@@ -75,17 +75,18 @@ final class DriverManager
      * To add your own driver use the 'driverClass' parameter to {@see DriverManager::getConnection()}.
      */
     private const DRIVER_MAP = [
-        'pdo_mysql'  => PDO\MySQL\Driver::class,
-        'pdo_sqlite' => PDO\SQLite\Driver::class,
-        'pdo_pgsql'  => PDO\PgSQL\Driver::class,
-        'pdo_oci'    => PDO\OCI\Driver::class,
-        'oci8'       => OCI8\Driver::class,
-        'ibm_db2'    => IBMDB2\Driver::class,
-        'pdo_sqlsrv' => PDO\SQLSrv\Driver::class,
-        'mysqli'     => Mysqli\Driver::class,
-        'pgsql'      => PgSQL\Driver::class,
-        'sqlsrv'     => SQLSrv\Driver::class,
-        'sqlite3'    => SQLite3\Driver::class,
+        'pdo_mysql'    => PDO\MySQL\Driver::class,
+        'pdo_sqlite'   => PDO\SQLite\Driver::class,
+        'pdo_pgsql'    => PDO\PgSQL\Driver::class,
+        'pdo_oci'      => PDO\OCI\Driver::class,
+        'pdo_firebird' => PDO\Firebird\Driver::class,
+        'oci8'         => OCI8\Driver::class,
+        'ibm_db2'      => IBMDB2\Driver::class,
+        'pdo_sqlsrv'   => PDO\SQLSrv\Driver::class,
+        'mysqli'       => Mysqli\Driver::class,
+        'pgsql'        => PgSQL\Driver::class,
+        'sqlsrv'       => SQLSrv\Driver::class,
+        'sqlite3'      => SQLite3\Driver::class,
     ];
 
     /**
