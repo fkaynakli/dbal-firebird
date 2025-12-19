@@ -1,15 +1,24 @@
 {
     "name": "foodsoft/doctrine-firebird-driver",
-    "autoload": {
-        "psr-4": {
-            "Doctrine\\DBAL\\": "src/"
-        }
-    },
+    "type": "library",
+    "description": "Firebird SQL PDO driver for Doctrine DBAL",
+    "keywords": ["firebird", "doctrine", "dbal", "database", "pdo"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Faruk KAYNAKLI",
             "email": "fkaynakli@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": "^8.1",
+        "ext-pdo": "*",
+        "ext-pdo_firebird": "*",
+        "doctrine/dbal": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Foodsoft\\FirebirdDriver\\": "lib/"
+        }
+    }
 }
