@@ -22,13 +22,18 @@ echo '<pre>';
 
 try {
     // Test sorgusu - otomatik bağlantı yapacaktır
-    $result = $conn->executeQuery('SELECT FIRST 5 * FROM RDB$RELATIONS');
+    // $result = $conn->executeQuery('SELECT FIRST 5 * FROM RDB$RELATIONS');
+    // $tables = $result->fetchAllAssociative();
+
+    // echo "Bağlantı başarılı!\n\n";
+    // echo "İlk 5 sistem tablosu:\n";
+    $result = $conn->executeQuery('DELETE FROM MOBIL_KULLANICI WHERE ID > 250');
+    $id = $nextId = $conn->fetchOne("SELECT GEN_ID(GEN_MOBIL_KULLANICI_ID, 1) FROM RDB\$DATABASE");
+    $result = $conn->executeQuery("INSERT INTO MOBIL_KULLANICI (ID, KULLANICI_ADI, MODIFIED_AT) VALUES ($id, 'TEST USER', CURRENT_TIMESTAMP)");
+    $result = $conn->executeQuery('SELECT first 5 * FROM MOBIL_KULLANICI ORDER BY ID DESC');
     $tables = $result->fetchAllAssociative();
-    
-    echo "Bağlantı başarılı!\n\n";
-    echo "İlk 5 sistem tablosu:\n";
+
     print_r($tables);
-    
 } catch (\Exception $e) {
     echo "Hata: " . $e->getMessage() . "\n\n";
     echo "Hata kodu: " . $e->getCode() . "\n\n";
