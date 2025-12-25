@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace FKaynakli\FirebirdDriver;
+namespace Foodsoft\FirebirdDriver;
 
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\ServerVersionProvider;
-use FKaynakli\FirebirdDriver\Platform\FirebirdPlatform;
-use FKaynakli\FirebirdDriver\Exception\ExceptionConverter as FirebirdExceptionConverter;
+use Foodsoft\FirebirdDriver\Platform\FirebirdPlatform;
+use Foodsoft\FirebirdDriver\Exception\ExceptionConverter as FirebirdExceptionConverter;
 
 /**
  * Firebird PDO driver for Doctrine DBAL.

@@ -1,8 +1,8 @@
 {
     "name": "foodsoft/doctrine-firebird-driver",
-    "type": "library",
-    "description": "Firebird SQL PDO driver for Doctrine DBAL",
-    "keywords": ["firebird", "doctrine", "dbal", "database", "pdo"],
+    "type": "symfony-bundle",
+    "description": "Firebird SQL PDO driver for Doctrine DBAL with Symfony Bundle support",
+    "keywords": ["firebird", "doctrine", "dbal", "database", "pdo", "symfony", "bundle"],
     "license": "MIT",
     "authors": [
         {
@@ -14,11 +14,22 @@
         "php": "^8.1",
         "ext-pdo": "*",
         "ext-pdo_firebird": "*",
-        "doctrine/dbal": "^4.0"
+        "doctrine/dbal": "^4.0",
+        "symfony/http-kernel": "^6.0|^7.0",
+        "symfony/dependency-injection": "^6.0|^7.0",
+        "symfony/config": "^6.0|^7.0"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": "^6.0|^7.0"
     },
     "autoload": {
         "psr-4": {
-            "FKaynakli\\FirebirdDriver\\": "src/"
+            "Foodsoft\\FirebirdDriver\\": "lib/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0-dev"
         }
     }
 }

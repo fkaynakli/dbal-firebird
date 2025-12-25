@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: false
+
+    # Firebird Driver
+    Foodsoft\FirebirdDriver\FirebirdDriver:
+        public: true
+        tags:
+            - { name: 'doctrine.dbal.driver' }
+
+    # Platform
+    Foodsoft\FirebirdDriver\Platform\FirebirdPlatform:
+        public: true
+
+    # Exception Converter
+    Foodsoft\FirebirdDriver\Exception\ExceptionConverter:
+        public: true

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FKaynakli\FirebirdDriver\Platform;
+namespace Foodsoft\FirebirdDriver\Platform;
 
 use Doctrine\DBAL\Platforms\Keywords\KeywordList;
 

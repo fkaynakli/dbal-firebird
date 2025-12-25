@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FKaynakli\FirebirdDriver\Exception;
+namespace Foodsoft\FirebirdDriver\Exception;
 
 use Doctrine\DBAL\Driver\API\ExceptionConverter as ExceptionConverterInterface;
 use Doctrine\DBAL\Driver\Exception;

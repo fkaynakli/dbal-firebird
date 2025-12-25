@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace FKaynakli\FirebirdDriver\Platform;
+namespace Foodsoft\FirebirdDriver\Platform;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\Keywords\KeywordList;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use FKaynakli\FirebirdDriver\Platform\FirebirdKeywords;
+use Foodsoft\FirebirdDriver\Platform\FirebirdKeywords;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
