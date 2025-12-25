@@ -4,65 +4,79 @@ declare(strict_types=1);
 
 namespace Foodsoft\FirebirdDriver;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
-use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\ServerVersionProvider;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Exception;
 use Foodsoft\FirebirdDriver\Platform\FirebirdPlatform;
-use Foodsoft\FirebirdDriver\Exception\ExceptionConverter as FirebirdExceptionConverter;
+use Foodsoft\FirebirdDriver\Schema\FirebirdSchemaManager;
 
 /**
- * Firebird PDO driver for Doctrine DBAL.
+ * Firebird PDO driver for Doctrine DBAL 2.13.
  */
 final class FirebirdDriver implements Driver
 {
-    use \Doctrine\DBAL\Driver\PDO\PDOConnect;
-
-    public function connect(
-        #[\SensitiveParameter]
-        array $params
-    ): \Doctrine\DBAL\Driver\Connection {
-        $driverOptions = [];
-
-        if (isset($params['driverOptions'])) {
-            $driverOptions = $params['driverOptions'];
-        }
-
+    /**
+     * {@inheritdoc}
+     */
+    public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
+    {
         if (! empty($params['persistent'])) {
             $driverOptions[\PDO::ATTR_PERSISTENT] = true;
         }
 
-        foreach (['user', 'password'] as $key) {
-            if (isset($params[$key]) && ! is_string($params[$key])) {
-                throw \Doctrine\DBAL\Driver\PDO\Exception\InvalidConfiguration::notAStringOrNull($key, $params[$key]);
-            }
-        }
-
-        $safeParams = $params;
-        unset($safeParams['password']);
-
         try {
-            $pdo = $this->doConnect(
-                $this->constructDsn($safeParams),
-                $params['user'] ?? '',
-                $params['password'] ?? '',
-                $driverOptions,
+            return new \Doctrine\DBAL\Driver\PDOConnection(
+                $this->constructDsn($params),
+                $username,
+                $password,
+                $driverOptions
             );
-        } catch (\PDOException $exception) {
-            throw \Doctrine\DBAL\Driver\PDO\Exception::new($exception);
+        } catch (\PDOException $ex) {
+            throw Exception::driverException($this, $ex);
         }
-
-        return new \Doctrine\DBAL\Driver\PDO\Connection($pdo);
     }
 
-    public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform
+    /**
+     * {@inheritdoc}
+     */
+    public function getDatabasePlatform()
     {
         return new FirebirdPlatform();
     }
 
-    public function getExceptionConverter(): ExceptionConverter
+    /**
+     * {@inheritdoc}
+     */
+    public function getSchemaManager(Connection $conn): AbstractSchemaManager
     {
-        return new FirebirdExceptionConverter();
+        return new FirebirdSchemaManager($conn, new FirebirdPlatform());
+    }
+
+    /**
+     * {@inheritdoc}
+     * @deprecated
+     */
+    public function getName()
+    {
+        return 'pdo_firebird';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDatabase(Connection $conn)
+    {
+        $params = $conn->getParams();
+        if (isset($params['dbname'])) {
+            return $params['dbname'];
+        }
+
+        // Fallback: ask database for current DB name
+        $stmt = $conn->query("SELECT CAST(RDB$GET_CONTEXT('SYSTEM','DB_NAME') AS VARCHAR(255)) FROM RDB$DATABASE");
+        $db = $stmt->fetchColumn();
+        return $db !== false ? $db : '';
     }
 
     /**

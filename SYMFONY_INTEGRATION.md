@@ -4,7 +4,7 @@ Bu döküman, Firebird Driver'ı Symfony projelerinize nasıl entegre edeceğini
 
 ## 1. Yerel Paket Olarak Kurulum
 
-### composer.json'unuza yerel repository ekleyin:
+### composer.json'unuza yerel repository ekleyin (Symfony 5.4 + DBAL 2.13):
 
 ```json
 {
@@ -18,7 +18,9 @@ Bu döküman, Firebird Driver'ı Symfony projelerinize nasıl entegre edeceğini
         }
     ],
     "require": {
-        "foodsoft/doctrine-firebird-driver": "@dev"
+        "foodsoft/doctrine-firebird-driver": "@dev",
+        "symfony/framework-bundle": "^5.4",
+        "doctrine/dbal": "^2.13"
     }
 }
 ```
@@ -26,7 +28,7 @@ Bu döküman, Firebird Driver'ı Symfony projelerinize nasıl entegre edeceğini
 ### Paketi yükleyin:
 
 ```bash
-composer require foodsoft/doctrine-firebird-driver:@dev
+composer require symfony/framework-bundle:^5.4 doctrine/dbal:^2.13 foodsoft/doctrine-firebird-driver:@dev
 ```
 
 ## 2. Bundle'ı Etkinleştirin
@@ -44,7 +46,7 @@ return [
 
 ## 3. Doctrine DBAL Konfigürasyonu
 
-### config/packages/doctrine.yaml
+### config/packages/doctrine.yaml (DBAL 2.13)
 
 ```yaml
 doctrine:
@@ -85,7 +87,7 @@ FIREBIRD_CHARSET=UTF8
 ###< doctrine/dbal ###
 ```
 
-### Alternatif: Environment variables ile:
+### Alternatif: Environment variables ile (DoctrineBundle 2.x):
 
 ```yaml
 doctrine:

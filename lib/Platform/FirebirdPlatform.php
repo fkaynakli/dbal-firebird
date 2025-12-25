@@ -11,10 +11,10 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Foodsoft\FirebirdDriver\Platform\FirebirdKeywords;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Identifier;
-use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\TransactionIsolationLevel;
+use Doctrine\DBAL\Platforms\DateIntervalUnit;
 use Doctrine\DBAL\Types\Type;
 use UnexpectedValueException;
 
@@ -25,10 +25,7 @@ use function sprintf;
  */
 class FirebirdPlatform extends AbstractPlatform
 {
-    public function __construct()
-    {
-        parent::__construct(UnquotedIdentifierFolding::UPPER);
-    }
+    // DBAL 2.13 does not support UnquotedIdentifierFolding configuration.
 
     public function getBooleanTypeDeclarationSQL(array $column): string
     {
@@ -175,22 +172,28 @@ class FirebirdPlatform extends AbstractPlatform
         return sprintf('SELECT GEN_ID(%s, 1) FROM RDB$DATABASE', $sequence);
     }
 
-    public function getSetTransactionIsolationSQL(TransactionIsolationLevel $level): string
+    public function getSetTransactionIsolationSQL($level)
     {
         return sprintf(
             'SET TRANSACTION ISOLATION LEVEL %s',
-            $this->_getTransactionIsolationLevelSQL($level),
+            $this->_getTransactionIsolationLevelSQL($level)
         );
     }
 
-    protected function _getTransactionIsolationLevelSQL(TransactionIsolationLevel $level): string
+    protected function _getTransactionIsolationLevelSQL($level)
     {
-        return match ($level) {
-            TransactionIsolationLevel::READ_UNCOMMITTED => 'READ COMMITTED RECORD_VERSION',
-            TransactionIsolationLevel::READ_COMMITTED   => 'READ COMMITTED NO RECORD_VERSION',
-            TransactionIsolationLevel::REPEATABLE_READ  => 'SNAPSHOT',
-            TransactionIsolationLevel::SERIALIZABLE     => 'SNAPSHOT TABLE STABILITY',
-        };
+        switch ($level) {
+            case TransactionIsolationLevel::READ_UNCOMMITTED:
+                return 'READ COMMITTED RECORD_VERSION';
+            case TransactionIsolationLevel::READ_COMMITTED:
+                return 'READ COMMITTED NO RECORD_VERSION';
+            case TransactionIsolationLevel::REPEATABLE_READ:
+                return 'SNAPSHOT';
+            case TransactionIsolationLevel::SERIALIZABLE:
+                return 'SNAPSHOT TABLE STABILITY';
+        }
+
+        return parent::_getTransactionIsolationLevelSQL($level);
     }
 
     public function getReadLockSQL(): string
@@ -213,16 +216,16 @@ class FirebirdPlatform extends AbstractPlatform
         throw new UnexpectedValueException('Firebird does not support listing databases.');
     }
 
-    public function getLocateExpression(string $string, string $substring, ?string $start = null): string
+    public function getLocateExpression($string, $substring, $start = false)
     {
-        if ($start === null) {
+        if ($start === false) {
             return sprintf('POSITION(%s, %s)', $substring, $string);
         }
 
         return sprintf('POSITION(%s, %s, %s)', $substring, $string, $start);
     }
 
-    public function getSubstringExpression(string $string, string $start, ?string $length = null): string
+    public function getSubstringExpression($string, $start, $length = null)
     {
         if ($length === null) {
             return sprintf('SUBSTRING(%s FROM %s)', $string, $start);
@@ -251,19 +254,10 @@ class FirebirdPlatform extends AbstractPlatform
         return sprintf('DATEDIFF(DAY, %s, %s)', $date2, $date1);
     }
 
-    protected function getDateArithmeticIntervalExpression(
-        string $date,
-        string $operator,
-        string $interval,
-        DateIntervalUnit $unit,
-    ): string {
-        $factorClause = '';
-
-        if ($operator === '-') {
-            $factorClause = '-';
-        }
-
-        return sprintf('DATEADD(%s, %s%s, %s)', $unit->value, $factorClause, $interval, $date);
+    protected function getDateArithmeticIntervalExpression($date, $operator, $interval, $unit)
+    {
+        $factorClause = $operator === '-' ? '-' : '';
+        return sprintf('DATEADD(%s, %s%s, %s)', $unit, $factorClause, (string) $interval, $date);
     }
 
     public function getListViewsSQL(string $database): string
@@ -318,14 +312,5 @@ class FirebirdPlatform extends AbstractPlatform
         return array_merge($sql, parent::getAlterTableSQL($diff));
     }
 
-    public function createSchemaManager(Connection $connection): AbstractSchemaManager
-    {
-        return new class ($connection, $this) extends AbstractSchemaManager {
-            protected function _getPortableTableColumnDefinition(array $tableColumn): Column
-            {
-                $typeName = $this->platform->getDoctrineTypeMapping($tableColumn['type'] ?? 'string');
-                return new Column($tableColumn['name'] ?? 'column', Type::getType($typeName));
-            }
-        };
-    }
+    // For DBAL 2.13, SchemaManager is provided by the driver.
 }
